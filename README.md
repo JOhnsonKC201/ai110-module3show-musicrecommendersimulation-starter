@@ -32,11 +32,11 @@ Every song in `data/songs.csv` has these attributes:
 - **valence** - basically how positive or dark the song sounds (0 = sad/heavy, 1 = bright/upbeat)
 - **danceability** - how much it makes you want to move
 - **acousticness** - whether it sounds more acoustic/organic or electronic/produced
-- **popularity** - how well known the song is, on a 0 to 100 scale
-- **release_decade** - when the song came out (1990s, 2000s, 2010s, 2020s)
-- **mood_tag** - a more specific emotional label like "euphoric," "nostalgic," "aggressive," or "dreamy"
-- **instrumentalness** - how much of the track is instrumental vs vocal (0 = all vocals, 1 = no vocals)
-- **liveness** - whether it sounds like a live performance or a studio recording
+- **popularity** - how well known the song is, 0 to 100
+- **release_decade** - when it came out (1990s, 2000s, 2010s, or 2020s)
+- **mood_tag** - a more detailed version of mood, stuff like "euphoric," "nostalgic," "aggressive," or "dreamy"
+- **instrumentalness** - how much of the track is just instruments vs singing (0 = all vocals, 1 = no vocals at all)
+- **liveness** - does it sound like a live show or a clean studio recording
 
 ### What the UserProfile stores
 
@@ -48,11 +48,11 @@ The user profile is how the system knows what you're into:
 - **likes_acoustic** - whether you prefer acoustic sounding stuff or not
 - **target_valence** - how positive you want the music to feel
 - **target_danceability** - how danceable you want it
-- **target_popularity** - whether you want mainstream hits or underground stuff
-- **preferred_decade** - what era of music you lean toward
-- **mood_tags** - specific emotional vibes you're looking for (can pick multiple)
-- **target_instrumentalness** - how much you want vocals vs pure instrumentals
-- **target_liveness** - whether you prefer studio polish or live energy
+- **target_popularity** - do you want mainstream hits or more underground stuff
+- **preferred_decade** - what era of music you're into
+- **mood_tags** - the specific vibes you want, you can pick more than one like ["euphoric", "nostalgic"]
+- **target_instrumentalness** - do you want vocals or more instrumental tracks
+- **target_liveness** - studio recordings or stuff that sounds more live
 
 ### The Algorithm Recipe
 
@@ -65,17 +65,17 @@ Here's how the scoring actually works. For every song in the catalog, the system
 - **Acousticness: +1.0 points** if the song's acoustic level lines up with your preference.
 - **Danceability closeness: up to +0.5 points** a smaller factor, mostly helps break ties between songs that are close on everything else.
 
-I also added scoring for the newer features:
+Later on I added scoring for more features too:
 
-- **Popularity closeness: up to +0.5 points** based on how close the song's popularity is to what you want. Uses a 0-100 scale so the distance gets divided by 100 first.
-- **Decade match: +0.5 points** if the song came out in your preferred decade, or +0.25 if it's from an adjacent decade (like if you prefer 2010s, a 2020s song still gets partial credit).
-- **Mood tag match: +1.0 points** if the song's detailed mood tag (like "euphoric" or "aggressive") is one of the tags in your profile.
-- **Instrumentalness closeness: up to +0.5 points** same closeness formula as energy.
-- **Liveness closeness: up to +0.5 points** rewards songs that match whether you want studio or live sounding tracks.
+- **Popularity closeness: up to +0.5 points** how close the song's popularity is to what you want. Since popularity goes 0-100 instead of 0-1, the distance gets divided by 100 first so the math works out.
+- **Decade match: +0.5 points** if the song came out in your preferred decade. You also get half credit (+0.25) if it's from the decade right next to yours, like if you pick 2010s and the song is from 2020s.
+- **Mood tag match: +1.0 points** if the song's mood tag is one of the ones you listed. So if you put ["euphoric", "nostalgic"] and the song is tagged "euphoric," you get the point.
+- **Instrumentalness closeness: up to +0.5 points** same closeness math as energy.
+- **Liveness closeness: up to +0.5 points** same deal, just for the live vs studio thing.
 
-The max possible score in balanced mode is 12.0 points. I normalize it to a 0-1 scale at the end. Then all the songs get sorted highest to lowest and the system returns the top 5 (or however many you ask for) with explanations.
+With all these the max score in balanced mode is 12.0 points total. Still normalizing to 0-1 at the end and sorting highest to lowest.
 
-The system also supports multiple scoring modes — you can switch between "balanced" (default), "genre-first" (genre weight cranked to 5.0), "mood-first" (mood at 4.0, mood tags at 2.0), and "energy-focused" (energy at 4.0, danceability at 1.5). Each mode just swaps the weights around without changing the actual algorithm.
+I also built in different scoring modes so you can change what the system cares about most. There's "balanced" which is the default, "genre-first" where genre gets cranked up to 5.0, "mood-first" where mood goes to 4.0 and mood tags to 2.0, and "energy-focused" where energy jumps to 4.0 and danceability to 1.5. You just pass the mode name and it swaps the weights, the actual scoring logic stays the same.
 
 ### Data Flow Diagram
 
@@ -247,7 +247,7 @@ You can add more tests in `tests/test_recommender.py`.
 
 ## Experiments I Tried
 
-I ran the recommender with three different user profiles to see how it handled different tastes:
+I tried running the recommender with a few different user profiles to see how it handles different kinds of listeners:
 
 - **Rock Fan profile** (genre=rock, mood=intense, energy=0.9): Storm Runner came in first with a near-perfect 0.99 score, which makes total sense. Street Cipher (hip-hop, intense) came second at 0.63 — it got the mood bonus but missed on genre. That 0.36 gap between first and second really shows how much the genre weight dominates.
 
@@ -259,7 +259,7 @@ One thing I noticed is that the system never recommends anything surprising. If 
 
 ### Edge Case / Adversarial Profiles
 
-I also ran three profiles that were specifically designed to break or confuse the system:
+Then I made three profiles that were kind of designed to mess with the system and see what it does:
 
 - **Contradictory profile** (genre=pop, mood=melancholy, energy=0.95): This is someone who wants super high energy but also sad vibes, which is kind of a weird combo. The system handled it but the results felt off. Gym Hero (pop, intense, 0.93 energy) won at 0.71 because genre carried it, but its valence score was low since Gym Hero sounds upbeat and this user wanted dark. Neon Puddles (indie pop, melancholy) only got 0.44 even though it actually matches the sad mood the user asked for. The genre weight basically drowned out the mood preference, which doesn't feel right for this kind of user.
 
@@ -277,18 +277,18 @@ For the **Genre Ghost** profile (reggaeton), scores went up across the board —
 
 The **Rock Fan** profile barely changed at the top. Storm Runner still won at 0.99 because it matches on everything. But the gap between #1 and #2 shrank from 0.36 to 0.19, which means the ranking is less "genre or bust" and more sensitive to the other features.
 
-Overall I'd say the experimental weights made the system slightly more fair across different kinds of users, but for people whose genre preference is really strong, the original weights probably feel more right. There's no single correct answer here.
+Overall I think the experimental weights were a bit more fair for people with niche tastes, but if you really care about genre the original weights feel better. There's no right answer honestly, it just depends on what you think matters more.
 
 ---
 
 ## Limitations and Risks
 
-- **Tiny catalog.** 20 songs is nothing. In a real scenario you'd have millions, and the brute-force loop through every song wouldn't scale at all. You'd need indexing or some kind of pre-filtering.
-- **Genre dominance.** Genre is worth 3 points out of 9, so it basically controls a third of the score by itself. A mediocre pop song will almost always beat an amazing jazz song for a pop listener, even if the jazz track matches everything else perfectly.
-- **No understanding of lyrics or language.** The system has no idea what a song is actually about. Two songs could be in the same genre with the same mood tag but one is about heartbreak and the other is a party anthem.
-- **Single rigid profile.** Real people's taste changes depending on the time of day, what they're doing, or just their mood in the moment. This system assumes you always want the same thing.
-- **My bias is baked into the data.** I picked all 20 songs and assigned their mood/energy/valence values by hand. Someone else might label the same songs completely differently, and the recommendations would change.
-- **No serendipity.** The system just gives you the mathematically closest matches every time. Real recommenders intentionally throw in some wildcards to help you discover new stuff.
+- **Tiny catalog.** 20 songs is basically nothing. A real app has millions and you'd need way smarter searching than just looping through every song.
+- **Genre dominance.** Genre takes up like a third of the score by itself. A mid pop song will almost always beat a perfect jazz song for a pop listener which doesn't feel great.
+- **No understanding of lyrics or language.** It has no clue what a song is actually about. Two songs could have the same mood tag but one's about heartbreak and the other is a party anthem.
+- **Single rigid profile.** Real people change what they want depending on their mood, time of day, what they're doing. This assumes you always want the same thing which obviously isn't true.
+- **My bias is baked into the data.** I picked all 20 songs and labeled everything by hand. Someone else might rate the same songs totally differently.
+- **No serendipity.** It just gives you the closest matches every single time. Real apps throw in random stuff on purpose so you discover new things.
 
 ---
 
@@ -296,6 +296,6 @@ Overall I'd say the experimental weights made the system slightly more fair acro
 
 [**Model Card**](model_card.md)
 
-The biggest thing I learned is that a recommender system is really just a set of opinions disguised as math. Every weight I chose — genre at 3.0, mood at 2.0, energy at 1.5 — was a judgment call about what matters most, and those choices completely shaped the output. When I ran the weight experiment and halved genre, the rankings shifted noticeably. The system didn't get "better" or "worse," it just reflected a different set of priorities. That made me realize that when Spotify or YouTube recommends something, there's a whole team of people behind the scenes deciding what factors to prioritize, and those decisions affect what millions of people end up listening to.
+Honestly the biggest thing I took away from this is that a recommender is really just someone's opinions dressed up as math. Every weight I picked, genre at 3.0, mood at 2.0, energy at 1.5, those were all my calls about what should matter most. And they completely shaped what the system spits out. When I did the experiment where I halved genre and doubled energy, the rankings moved around a lot. It wasn't that one version was "right" and the other was "wrong," they just reflected different priorities. That's kind of wild when you think about how Spotify or YouTube does this for millions of people. Someone at those companies is making those same weight decisions and it changes what everyone listens to.
 
-The bias part was eye-opening too. My system over-prioritizes genre because I made it worth a third of the total score, and the catalog itself is biased toward the genres I thought to include. Someone who listens to K-pop or Afrobeats wouldn't even find their genre in the data. And the contradictory profile test showed that the system can't handle nuance at all — it doesn't understand that "high energy + sad" is a real vibe that actual music exists for. Real recommender systems deal with this by learning from user behavior over time, but even then they can create filter bubbles where you only ever hear what the algorithm thinks you already like.
+The bias stuff was interesting too. My system leans hard on genre because I made it worth a third of the score, and the catalog itself only has genres I thought to put in. If you listen to K-pop or Afrobeats you wouldn't even find your genre in the data. And the contradictory profile test was the one that really got me, the system just could not handle someone wanting "high energy + sad" even though that's a totally real vibe. Real systems learn from what you actually listen to over time, but even those can trap you in a filter bubble where you just keep hearing the same kind of stuff.
