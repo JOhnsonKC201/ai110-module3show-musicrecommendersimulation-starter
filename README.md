@@ -178,6 +178,66 @@ Loaded songs: 20
        -> valence closeness (+0.92)
        -> acoustic preference match (+1.0)
        -> danceability closeness (+0.50)
+
+============================================================
+  Profile D: Contradictory (high energy + sad mood)
+  Prefs: pop | melancholy | energy=0.95
+============================================================
+  #    Title                  Artist              Score
+  ------------------------------------------------------
+  1    Gym Hero               Max Pulse           0.71
+       -> genre match (+3.0)
+       -> energy closeness (+1.47)
+       -> valence closeness (+0.43)
+       -> acoustic preference match (+1.0)
+       -> danceability closeness (+0.46)
+
+  2    Sunrise City           Neon Echo           0.68
+       -> genre match (+3.0)
+       -> energy closeness (+1.30)
+       -> valence closeness (+0.36)
+       -> acoustic preference match (+1.0)
+       -> danceability closeness (+0.49)
+
+============================================================
+  Profile E: Genre Ghost (genre not in catalog)
+  Prefs: reggaeton | happy | energy=0.7
+============================================================
+  #    Title                  Artist              Score
+  ------------------------------------------------------
+  1    Cloud Nine             Ava Lune            0.66
+       -> mood match (+2.0)
+       -> energy closeness (+1.47)
+       -> valence closeness (+0.98)
+       -> acoustic preference match (+1.0)
+       -> danceability closeness (+0.46)
+
+  2    Rooftop Lights         Indigo Parade       0.65
+       -> mood match (+2.0)
+       -> energy closeness (+1.41)
+       -> valence closeness (+0.99)
+       -> acoustic preference match (+1.0)
+       -> danceability closeness (+0.48)
+
+============================================================
+  Profile F: Middle of Everything (all 0.5)
+  Prefs: pop | chill | energy=0.5
+============================================================
+  #    Title                  Artist              Score
+  ------------------------------------------------------
+  1    Midnight Coding        LoRoom              0.64
+       -> mood match (+2.0)
+       -> energy closeness (+1.38)
+       -> valence closeness (+0.94)
+       -> acoustic preference match (+1.0)
+       -> danceability closeness (+0.44)
+
+  2    Library Rain           Paper Lanterns      0.63
+       -> mood match (+2.0)
+       -> energy closeness (+1.27)
+       -> valence closeness (+0.90)
+       -> acoustic preference match (+1.0)
+       -> danceability closeness (+0.46)
 ```
 
 ### Running Tests
@@ -203,6 +263,16 @@ I ran the recommender with three different user profiles to see how it handled d
 - **Pop Dancer profile** (genre=pop, mood=happy, energy=0.8): Sunrise City took the top spot at 0.99. Interestingly, Fuego Lento (latin, happy) beat out Rooftop Lights (indie pop, happy) even though neither matched the genre. They both got the mood bonus but Fuego's energy was a slightly closer match.
 
 One thing I noticed is that the system never recommends anything surprising. If you say you like rock, you get rock. There's no "you might also like this metal track" kind of logic, which a real recommender would probably do.
+
+### Edge Case / Adversarial Profiles
+
+I also ran three profiles that were specifically designed to break or confuse the system:
+
+- **Contradictory profile** (genre=pop, mood=melancholy, energy=0.95): This is someone who wants super high energy but also sad vibes, which is kind of a weird combo. The system handled it but the results felt off. Gym Hero (pop, intense, 0.93 energy) won at 0.71 because genre carried it, but its valence score was low since Gym Hero sounds upbeat and this user wanted dark. Neon Puddles (indie pop, melancholy) only got 0.44 even though it actually matches the sad mood the user asked for. The genre weight basically drowned out the mood preference, which doesn't feel right for this kind of user.
+
+- **Genre Ghost profile** (genre=reggaeton, mood=happy, energy=0.7): Reggaeton doesn't exist in the catalog at all, so no song can ever get the 3.0 genre bonus. That means the max possible score drops from 1.0 to around 0.67. The results are fine honestly — Cloud Nine and Rooftop Lights topped it because they matched mood and had close energy/valence. But it shows that someone with a niche taste just gets worse recommendations overall, not because the songs are bad for them but because the scoring ceiling is lower.
+
+- **Middle of Everything profile** (genre=pop, mood=chill, energy=0.5, valence=0.5, danceability=0.5): This person has no strong preferences, everything at 0.5. The interesting thing is that Midnight Coding (lofi, chill) beat Sunrise City (pop, happy) even though Sunrise City matches the genre. The chill mood songs had more moderate numerical values across the board so they scored better on the closeness calculations, and that outweighed the genre bonus. This tells me the system does okay with balanced profiles but the results feel kind of random — when nothing stands out, you get a grab bag.
 
 ---
 

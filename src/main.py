@@ -66,6 +66,31 @@ def main() -> None:
             "valence": 0.85,
             "danceability": 0.88,
         },
+        # --- Edge-case / adversarial profiles ---
+        "Profile D: Contradictory (high energy + sad mood)": {
+            "genre": "pop",
+            "mood": "melancholy",
+            "energy": 0.95,
+            "likes_acoustic": False,
+            "valence": 0.20,
+            "danceability": 0.80,
+        },
+        "Profile E: Genre Ghost (genre not in catalog)": {
+            "genre": "reggaeton",
+            "mood": "happy",
+            "energy": 0.70,
+            "likes_acoustic": False,
+            "valence": 0.80,
+            "danceability": 0.85,
+        },
+        "Profile F: Middle of Everything (all 0.5)": {
+            "genre": "pop",
+            "mood": "chill",
+            "energy": 0.50,
+            "likes_acoustic": True,
+            "valence": 0.50,
+            "danceability": 0.50,
+        },
     }
 
     for name, prefs in profiles.items():
