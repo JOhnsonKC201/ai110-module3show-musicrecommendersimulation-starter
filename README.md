@@ -130,134 +130,107 @@ python -m src.main
 
 ### Sample Output
 
-Here's what the terminal looks like when you run it:
+Here's what the terminal looks like when you run it (showing top 2 per profile):
 
 ```text
 Loaded songs: 20
 
-============================================================
+========================================================================
   Profile A: Rock Fan
   Prefs: rock | intense | energy=0.9
-============================================================
-  #    Title                  Artist              Score
-  ------------------------------------------------------
-  1    Storm Runner           Voltline            0.99
-       -> genre match (+3.0)
-       -> mood match (+2.0)
-       -> energy closeness (+1.49)
-       -> valence closeness (+0.97)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.49)
+  [mode=balanced]
+========================================================================
++-----+---------------+----------+---------+--------------------------------------+
+|   # | Title         | Artist   |   Score | Reasons                              |
++=====+===============+==========+=========+======================================+
+|   1 | Storm Runner  | Voltline |    0.99 | genre match (+3.0)                   |
+|     |               |          |         |   mood match (+2.0)                  |
+|     |               |          |         |   energy closeness (+1.49)           |
+|     |               |          |         |   valence closeness (+0.97)          |
+|     |               |          |         |   acoustic preference match (+1.0)   |
+|     |               |          |         |   danceability closeness (+0.49)     |
+|     |               |          |         |   popularity closeness (+0.49)       |
+|     |               |          |         |   decade match (+0.5)                |
+|     |               |          |         |   mood tag 'aggressive' match (+1.0) |
+|     |               |          |         |   instrumentalness closeness (+0.50) |
+|     |               |          |         |   liveness closeness (+0.50)         |
++-----+---------------+----------+---------+--------------------------------------+
+|   2 | Street Cipher | Lex Vega |    0.69 | mood match (+2.0)                    |
+|     |               |          |         |   energy closeness (+1.47)           |
+|     |               |          |         |   valence closeness (+0.83)          |
+|     |               |          |         |   acoustic preference match (+1.0)   |
+|     |               |          |         |   danceability closeness (+0.40)     |
+|     |               |          |         |   popularity closeness (+0.42)       |
+|     |               |          |         |   adjacent decade (+0.25)            |
+|     |               |          |         |   mood tag 'aggressive' match (+1.0) |
+|     |               |          |         |   instrumentalness closeness (+0.43) |
+|     |               |          |         |   liveness closeness (+0.47)         |
++-----+---------------+----------+---------+--------------------------------------+
 
-  2    Street Cipher          Lex Vega            0.63
-       -> mood match (+2.0)
-       -> energy closeness (+1.47)
-       -> valence closeness (+0.83)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.40)
-
-============================================================
+========================================================================
   Profile B: Lofi Chill Listener
   Prefs: lofi | chill | energy=0.35
-============================================================
-  #    Title                  Artist              Score
-  ------------------------------------------------------
-  1    Library Rain           Paper Lanterns      1.00
-       -> genre match (+3.0)
-       -> mood match (+2.0)
-       -> energy closeness (+1.50)
-       -> valence closeness (+1.00)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.48)
+  [mode=balanced]
+========================================================================
++-----+-----------------+----------------+---------+--------------------------------------+
+|   # | Title           | Artist         |   Score | Reasons                              |
++=====+=================+================+=========+======================================+
+|   1 | Library Rain    | Paper Lanterns |    1.00 | genre match (+3.0)                   |
+|     |                 |                |         |   mood match (+2.0)                  |
+|     |                 |                |         |   energy closeness (+1.50)           |
+|     |                 |                |         |   valence closeness (+1.00)          |
+|     |                 |                |         |   acoustic preference match (+1.0)   |
+|     |                 |                |         |   danceability closeness (+0.48)     |
+|     |                 |                |         |   popularity closeness (+0.49)       |
+|     |                 |                |         |   decade match (+0.5)                |
+|     |                 |                |         |   mood tag 'nostalgic' match (+1.0)  |
+|     |                 |                |         |   instrumentalness closeness (+0.49) |
+|     |                 |                |         |   liveness closeness (+0.50)         |
++-----+-----------------+----------------+---------+--------------------------------------+
+|   2 | Midnight Coding | LoRoom         |    0.98 | genre match (+3.0)                   |
+|     |                 |                |         |   mood match (+2.0)                  |
+|     |                 |                |         |   energy closeness (+1.40)           |
+|     |                 |                |         |   valence closeness (+0.96)          |
+|     |                 |                |         |   acoustic preference match (+1.0)   |
+|     |                 |                |         |   danceability closeness (+0.47)     |
+|     |                 |                |         |   popularity closeness (+0.47)       |
+|     |                 |                |         |   decade match (+0.5)                |
+|     |                 |                |         |   mood tag 'nostalgic' match (+1.0)  |
+|     |                 |                |         |   instrumentalness closeness (+0.47) |
+|     |                 |                |         |   liveness closeness (+0.48)         |
++-----+-----------------+----------------+---------+--------------------------------------+
 
-  2    Midnight Coding        LoRoom              0.98
-       -> genre match (+3.0)
-       -> mood match (+2.0)
-       -> energy closeness (+1.40)
-       -> valence closeness (+0.96)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.47)
-
-============================================================
+========================================================================
   Profile C: Pop Dancer
   Prefs: pop | happy | energy=0.8
-============================================================
-  #    Title                  Artist              Score
-  ------------------------------------------------------
-  1    Sunrise City           Neon Echo           0.99
-       -> genre match (+3.0)
-       -> mood match (+2.0)
-       -> energy closeness (+1.47)
-       -> valence closeness (+0.99)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.46)
-
-  2    Gym Hero               Max Pulse           0.75
-       -> genre match (+3.0)
-       -> energy closeness (+1.30)
-       -> valence closeness (+0.92)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.50)
-
-============================================================
-  Profile D: Contradictory (high energy + sad mood)
-  Prefs: pop | melancholy | energy=0.95
-============================================================
-  #    Title                  Artist              Score
-  ------------------------------------------------------
-  1    Gym Hero               Max Pulse           0.71
-       -> genre match (+3.0)
-       -> energy closeness (+1.47)
-       -> valence closeness (+0.43)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.46)
-
-  2    Sunrise City           Neon Echo           0.68
-       -> genre match (+3.0)
-       -> energy closeness (+1.30)
-       -> valence closeness (+0.36)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.49)
-
-============================================================
-  Profile E: Genre Ghost (genre not in catalog)
-  Prefs: reggaeton | happy | energy=0.7
-============================================================
-  #    Title                  Artist              Score
-  ------------------------------------------------------
-  1    Cloud Nine             Ava Lune            0.66
-       -> mood match (+2.0)
-       -> energy closeness (+1.47)
-       -> valence closeness (+0.98)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.46)
-
-  2    Rooftop Lights         Indigo Parade       0.65
-       -> mood match (+2.0)
-       -> energy closeness (+1.41)
-       -> valence closeness (+0.99)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.48)
-
-============================================================
-  Profile F: Middle of Everything (all 0.5)
-  Prefs: pop | chill | energy=0.5
-============================================================
-  #    Title                  Artist              Score
-  ------------------------------------------------------
-  1    Midnight Coding        LoRoom              0.64
-       -> mood match (+2.0)
-       -> energy closeness (+1.38)
-       -> valence closeness (+0.94)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.44)
-
-  2    Library Rain           Paper Lanterns      0.63
-       -> mood match (+2.0)
-       -> energy closeness (+1.27)
-       -> valence closeness (+0.90)
-       -> acoustic preference match (+1.0)
-       -> danceability closeness (+0.46)
+  [mode=balanced]
+========================================================================
++-----+--------------+-------------+---------+--------------------------------------+
+|   # | Title        | Artist      |   Score | Reasons                              |
++=====+==============+=============+=========+======================================+
+|   1 | Sunrise City | Neon Echo   |    0.99 | genre match (+3.0)                   |
+|     |              |             |         |   mood match (+2.0)                  |
+|     |              |             |         |   energy closeness (+1.47)           |
+|     |              |             |         |   valence closeness (+0.99)          |
+|     |              |             |         |   acoustic preference match (+1.0)   |
+|     |              |             |         |   danceability closeness (+0.46)     |
+|     |              |             |         |   popularity closeness (+0.49)       |
+|     |              |             |         |   decade match (+0.5)                |
+|     |              |             |         |   mood tag 'euphoric' match (+1.0)   |
+|     |              |             |         |   instrumentalness closeness (+0.50) |
+|     |              |             |         |   liveness closeness (+0.48)         |
++-----+--------------+-------------+---------+--------------------------------------+
+|   2 | Fuego Lento  | Sol Ramirez |    0.74 | mood match (+2.0)                    |
+|     |              |             |         |   energy closeness (+1.50)           |
+|     |              |             |         |   valence closeness (+0.99)          |
+|     |              |             |         |   acoustic preference match (+1.0)   |
+|     |              |             |         |   danceability closeness (+0.49)     |
+|     |              |             |         |   popularity closeness (+0.45)       |
+|     |              |             |         |   decade match (+0.5)                |
+|     |              |             |         |   mood tag 'euphoric' match (+1.0)   |
+|     |              |             |         |   instrumentalness closeness (+0.49) |
+|     |              |             |         |   liveness closeness (+0.45)         |
++-----+--------------+-------------+---------+--------------------------------------+
 ```
 
 ### Running Tests
