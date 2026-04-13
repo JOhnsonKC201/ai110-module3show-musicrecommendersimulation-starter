@@ -40,13 +40,53 @@ class Recommender:
     def __init__(self, songs: List[Song]):
         self.songs = songs
 
+    def _score(self, user: UserProfile, song: Song) -> Tuple[float, str]:
+        """Score a Song object against a UserProfile; returns (score, explanation)."""
+        MAX_SCORE = 9.0
+        total = 0.0
+        reasons = []
+
+        if song.genre == user.favorite_genre:
+            total += 3.0
+            reasons.append("genre match (+3.0)")
+
+        if song.mood == user.favorite_mood:
+            total += 2.0
+            reasons.append("mood match (+2.0)")
+
+        energy_pts = round(1.5 * (1.0 - abs(song.energy - user.target_energy)), 3)
+        total += energy_pts
+        reasons.append(f"energy closeness (+{energy_pts:.2f})")
+
+        valence_pts = round(1.0 * (1.0 - abs(song.valence - user.target_valence)), 3)
+        total += valence_pts
+        reasons.append(f"valence closeness (+{valence_pts:.2f})")
+
+        acoustic_match = (
+            (user.likes_acoustic and song.acousticness > 0.5)
+            or (not user.likes_acoustic and song.acousticness <= 0.5)
+        )
+        if acoustic_match:
+            total += 1.0
+            reasons.append("acoustic preference match (+1.0)")
+
+        dance_pts = round(0.5 * (1.0 - abs(song.danceability - user.target_danceability)), 3)
+        total += dance_pts
+        reasons.append(f"danceability closeness (+{dance_pts:.2f})")
+
+        normalized = round(total / MAX_SCORE, 4)
+        return normalized, "; ".join(reasons)
+
     def recommend(self, user: UserProfile, k: int = 5) -> List[Song]:
-        # TODO: Implement recommendation logic
-        return self.songs[:k]
+        """Return the top k songs sorted by score descending."""
+        scored = [(song, self._score(user, song)[0]) for song in self.songs]
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return [song for song, _ in scored[:k]]
 
     def explain_recommendation(self, user: UserProfile, song: Song) -> str:
-        # TODO: Implement explanation logic
-        return "Explanation placeholder"
+        """Return a human-readable explanation of why this song was recommended."""
+        _, explanation = self._score(user, song)
+        return explanation
 
 def load_songs(csv_path: str) -> List[Dict]:
     """Read songs.csv and return a list of dicts with numeric fields converted to int/float."""
