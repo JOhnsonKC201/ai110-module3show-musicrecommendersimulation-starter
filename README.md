@@ -11,23 +11,60 @@ Your goal is to:
 - Evaluate what your system gets right and wrong
 - Reflect on how this mirrors real world AI recommenders
 
-Replace this paragraph with your own summary of what your version does.
+So basically what I built here is a simple music recommender that looks at what kind of music you say you like and then tries to find the best matches from a small catalog of 20 songs. It checks things like genre, mood, energy level, and a few other song traits, scores each song based on how close it is to your taste, and gives you the top picks along with a short explanation for why it chose each one.
 
 ---
 
 ## How The System Works
 
-Explain your design in plain language.
+The way real apps like Spotify work is they combine two main approaches. One is collaborative filtering, which is basically looking at what other people with similar taste listened to and recommending that to you. The other is content-based filtering, where the system looks at the actual attributes of songs you already like (tempo, energy, mood, etc.) and finds other songs with similar traits. Most real platforms use both together plus a bunch of machine learning on top.
 
-Some prompts to answer:
+For this project I went with just content-based filtering since we don't have other users to compare against. It keeps things simple and you can actually see why the system made each recommendation, which I think is cool.
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
+### What each Song has
 
-You can include a simple diagram or bullet list if helpful.
+Every song in `data/songs.csv` has these attributes:
+
+- **genre** - the main category like pop, lofi, rock, hip-hop, etc. (14 different genres in the catalog)
+- **mood** - the vibe of the track like happy, chill, intense, melancholy, angry, etc.
+- **energy** - how intense or calm it feels, on a 0 to 1 scale
+- **tempo_bpm** - the speed in beats per minute
+- **valence** - basically how positive or dark the song sounds (0 = sad/heavy, 1 = bright/upbeat)
+- **danceability** - how much it makes you want to move
+- **acousticness** - whether it sounds more acoustic/organic or electronic/produced
+
+### What the UserProfile stores
+
+The user profile is how the system knows what you're into:
+
+- **favorite_genre** - your go-to genre
+- **favorite_mood** - the mood you usually gravitate toward
+- **target_energy** - your ideal energy level
+- **likes_acoustic** - whether you prefer acoustic sounding stuff or not
+- **target_valence** - how positive you want the music to feel
+- **target_danceability** - how danceable you want it
+
+### The Algorithm Recipe
+
+Here's how the scoring actually works. For every song in the catalog, the system calculates a score based on these rules:
+
+- **Genre match: +3.0 points** if the song's genre matches your favorite. This is weighted the heaviest because honestly if you're a rock person and the system recommends ambient music, that just feels wrong no matter how close the other numbers are.
+- **Mood match: +2.0 points** if the mood lines up. Important but not as make-or-break as genre since moods can overlap a bit.
+- **Energy closeness: up to +1.5 points** using the formula `1 - |song energy - your target|`. So if you want 0.9 energy and a song is at 0.88, that's almost full points. A song at 0.3 barely gets anything.
+- **Valence closeness: up to +1.0 points** same idea, rewards songs that match how positive or dark you want things.
+- **Acousticness: +1.0 points** if the song's acoustic level lines up with your preference.
+- **Danceability closeness: up to +0.5 points** a smaller factor, mostly helps break ties between songs that are close on everything else.
+
+The max possible score is 9.0 points. I normalize it to a 0-1 scale at the end. Then all the songs get sorted highest to lowest and the system returns the top 5 (or however many you ask for) with explanations.
+
+### Potential biases I'm expecting
+
+Being real about it, this system has some built-in biases I can already see:
+
+- **It's going to over-prioritize genre.** With genre worth 3 points, a perfect genre match with mediocre everything else will often beat a song that nails mood + energy + valence but is in the wrong genre. That means you might miss some great songs that fit your vibe but happen to be in a different category.
+- **The catalog itself is biased.** I picked the songs, so they reflect my idea of what different genres sound like. Someone else might define "chill" or "intense" totally differently.
+- **It treats everyone the same shape.** Some people care way more about mood than genre, or they like variety and don't want 5 songs that all sound identical. This system doesn't adapt to that at all.
+- **No discovery factor.** Real recommenders throw in some surprises on purpose. This one just gives you the closest matches every time, which could get boring fast.
 
 ---
 
