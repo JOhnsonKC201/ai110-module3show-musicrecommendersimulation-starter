@@ -65,7 +65,17 @@ Here's how the scoring actually works. For every song in the catalog, the system
 - **Acousticness: +1.0 points** if the song's acoustic level lines up with your preference.
 - **Danceability closeness: up to +0.5 points** a smaller factor, mostly helps break ties between songs that are close on everything else.
 
-The max possible score is 9.0 points. I normalize it to a 0-1 scale at the end. Then all the songs get sorted highest to lowest and the system returns the top 5 (or however many you ask for) with explanations.
+I also added scoring for the newer features:
+
+- **Popularity closeness: up to +0.5 points** based on how close the song's popularity is to what you want. Uses a 0-100 scale so the distance gets divided by 100 first.
+- **Decade match: +0.5 points** if the song came out in your preferred decade, or +0.25 if it's from an adjacent decade (like if you prefer 2010s, a 2020s song still gets partial credit).
+- **Mood tag match: +1.0 points** if the song's detailed mood tag (like "euphoric" or "aggressive") is one of the tags in your profile.
+- **Instrumentalness closeness: up to +0.5 points** same closeness formula as energy.
+- **Liveness closeness: up to +0.5 points** rewards songs that match whether you want studio or live sounding tracks.
+
+The max possible score in balanced mode is 12.0 points. I normalize it to a 0-1 scale at the end. Then all the songs get sorted highest to lowest and the system returns the top 5 (or however many you ask for) with explanations.
+
+The system also supports multiple scoring modes — you can switch between "balanced" (default), "genre-first" (genre weight cranked to 5.0), "mood-first" (mood at 4.0, mood tags at 2.0), and "energy-focused" (energy at 4.0, danceability at 1.5). Each mode just swaps the weights around without changing the actual algorithm.
 
 ### Data Flow Diagram
 
