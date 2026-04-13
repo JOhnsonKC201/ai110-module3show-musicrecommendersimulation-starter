@@ -10,15 +10,17 @@
 
 This recommender suggests the top 5 songs from a small catalog based on a user's preferred genre, mood, energy level, and a few other taste preferences. It's built for classroom exploration only, not for real users. It assumes the user knows what genre and mood they want and that those preferences stay constant, which obviously isn't how real people work but it keeps the system simple enough to learn from.
 
+This system should NOT be used to make real music recommendations to actual users. The catalog is way too small, the feature values are hand-labeled by one person, and there's no feedback loop to learn from what users actually enjoy. It also shouldn't be used to draw conclusions about what "most people" like since it has no real user data at all. It's a learning exercise, not a product.
+
 ---
 
 ## 3. How the Model Works
 
 The system takes your taste profile and compares it against every song in the catalog. For each song, it calculates a score based on how well the song matches what you said you like.
 
-Genre match is the biggest factor — if a song is in your favorite genre, it gets a big boost right away. Mood match is the second biggest. After that, the system looks at numerical traits like energy, valence (how positive the song sounds), danceability, and whether the song is acoustic or electronic. For the number-based traits, it measures how close the song's value is to your target — so if you want energy at 0.8 and a song is at 0.82, that's almost a perfect score on that trait.
+Genre match is the biggest factor in the default "balanced" mode — if a song is in your favorite genre, it gets a big boost right away. Mood match is the second biggest. After that, the system looks at numerical traits like energy, valence (how positive the song sounds), danceability, and whether the song is acoustic or electronic. It also checks newer features like popularity, release decade, mood tags (euphoric, nostalgic, aggressive, dreamy), instrumentalness, and liveness. For the number-based traits, it measures how close the song's value is to your target — so if you want energy at 0.8 and a song is at 0.82, that's almost a perfect score on that trait.
 
-All the points get added up and normalized to a 0-to-1 scale. Then every song gets sorted from highest to lowest, and the system gives you the top 5 with an explanation of exactly why each one scored the way it did.
+All the points get added up and normalized to a 0-to-1 scale. Then every song gets sorted from highest to lowest, and the system gives you the top 5 with an explanation of exactly why each one scored the way it did. You can also switch between four scoring modes (balanced, genre-first, mood-first, energy-focused) to change what the system prioritizes, and there's a diversity penalty option that docks points from songs that repeat the same artist or genre in the results.
 
 ---
 
@@ -26,7 +28,7 @@ All the points get added up and normalized to a 0-to-1 scale. Then every song ge
 
 The catalog has 20 songs in `data/songs.csv`. The original starter had 10 and I added 10 more to cover genres that were missing like r&b, electronic, folk, hip-hop, classical, latin, and metal.
 
-Each song has these attributes: genre, mood, energy (0-1), tempo in BPM, valence (0-1), danceability (0-1), and acousticness (0-1). The numerical values were assigned by hand based on how the songs feel, which means they reflect my personal interpretation. Someone else might rate the same songs differently.
+Each song has 12 attributes: genre, mood, energy (0-1), tempo in BPM, valence (0-1), danceability (0-1), acousticness (0-1), popularity (0-100), release decade, mood tag (euphoric/nostalgic/aggressive/dreamy), instrumentalness (0-1), and liveness (0-1). The numerical values were assigned by hand based on how the songs feel, which means they reflect my personal interpretation. Someone else might rate the same songs differently.
 
 There are 14 different genres represented but most only have one song each, so if your taste falls in a less common genre the system has fewer options to pick from. Pop and lofi have the most representation with 2 songs each.
 
@@ -84,3 +86,7 @@ The thing that surprised me most was how the contradictory profile exposed the g
 Building this taught me that recommender systems are basically just opinion machines with math on top. Every single choice I made — how much genre should matter, what "energy" means, which songs to include — baked my own biases into the output. The system feels objective because it uses numbers, but those numbers came from subjective decisions.
 
 The thing that stuck with me most is how the contradictory profile handled things. A real person who wants "high energy but sad" is probably thinking of something specific, like intense emo music or aggressive rap about heartbreak. My system can't understand that because it treats each feature independently. It doesn't know that certain combinations of traits map to real subcultures or vibes that people actually experience. That gap between what the numbers describe and what the music actually feels like is where human judgment still matters, no matter how good the algorithm gets.
+
+AI tools were genuinely helpful for the repetitive parts — generating CSV data in the right format, scaffolding the scoring function, and formatting the CLI output. Where I had to double-check was the math. When I asked for a scoring function the AI gave me weights that didn't add up to what I wanted for MAX_SCORE, so I had to recalculate and fix that myself. I also had to sanity-check the recommendations by running them and asking "does this actually make sense for someone who likes rock?" instead of just trusting that the code worked. The code can be correct and still produce bad recommendations if the weights are off.
+
+What surprised me is how convincing even a dead-simple algorithm feels. Five songs with scores and explanations looks like a real recommendation engine, but under the hood it's just addition and sorting. That made me realize how easy it is for users to trust a system's output just because it's presented with confidence and numbers, even when the logic is basic and the data is tiny.
