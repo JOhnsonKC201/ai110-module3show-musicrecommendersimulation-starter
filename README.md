@@ -32,6 +32,11 @@ Every song in `data/songs.csv` has these attributes:
 - **valence** - basically how positive or dark the song sounds (0 = sad/heavy, 1 = bright/upbeat)
 - **danceability** - how much it makes you want to move
 - **acousticness** - whether it sounds more acoustic/organic or electronic/produced
+- **popularity** - how well known the song is, on a 0 to 100 scale
+- **release_decade** - when the song came out (1990s, 2000s, 2010s, 2020s)
+- **mood_tag** - a more specific emotional label like "euphoric," "nostalgic," "aggressive," or "dreamy"
+- **instrumentalness** - how much of the track is instrumental vs vocal (0 = all vocals, 1 = no vocals)
+- **liveness** - whether it sounds like a live performance or a studio recording
 
 ### What the UserProfile stores
 
@@ -43,6 +48,11 @@ The user profile is how the system knows what you're into:
 - **likes_acoustic** - whether you prefer acoustic sounding stuff or not
 - **target_valence** - how positive you want the music to feel
 - **target_danceability** - how danceable you want it
+- **target_popularity** - whether you want mainstream hits or underground stuff
+- **preferred_decade** - what era of music you lean toward
+- **mood_tags** - specific emotional vibes you're looking for (can pick multiple)
+- **target_instrumentalness** - how much you want vocals vs pure instrumentals
+- **target_liveness** - whether you prefer studio polish or live energy
 
 ### The Algorithm Recipe
 
