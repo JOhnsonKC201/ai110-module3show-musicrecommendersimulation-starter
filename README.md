@@ -274,6 +274,18 @@ I also ran three profiles that were specifically designed to break or confuse th
 
 - **Middle of Everything profile** (genre=pop, mood=chill, energy=0.5, valence=0.5, danceability=0.5): This person has no strong preferences, everything at 0.5. The interesting thing is that Midnight Coding (lofi, chill) beat Sunrise City (pop, happy) even though Sunrise City matches the genre. The chill mood songs had more moderate numerical values across the board so they scored better on the closeness calculations, and that outweighed the genre bonus. This tells me the system does okay with balanced profiles but the results feel kind of random — when nothing stands out, you get a grab bag.
 
+### Weight Experiment: Genre Halved, Energy Doubled
+
+I wanted to see what happens when energy matters more than genre, so I changed genre from +3.0 to +1.5 and energy from +1.5 to +3.0 (MAX_SCORE stays 9.0 since the total didn't change).
+
+The biggest difference showed up in the **Pop Dancer** profile. With original weights, Gym Hero (pop, intense) was #2 at 0.75 because it got the full genre bonus. After the change, it dropped to #5 at 0.73 and Fuego Lento (latin, happy) jumped from #3 to #2 at 0.83 because its energy (0.80) was a dead-on match for the user's target. That felt more accurate to me honestly — if someone wants happy pop at 0.8 energy, a latin track at exactly 0.8 energy probably vibes better than an intense gym track at 0.93.
+
+For the **Genre Ghost** profile (reggaeton), scores went up across the board — the top song went from 0.66 to 0.82. That makes sense because when genre can never match, lowering its weight means less of the total score is unreachable.
+
+The **Rock Fan** profile barely changed at the top. Storm Runner still won at 0.99 because it matches on everything. But the gap between #1 and #2 shrank from 0.36 to 0.19, which means the ranking is less "genre or bust" and more sensitive to the other features.
+
+Overall I'd say the experimental weights made the system slightly more fair across different kinds of users, but for people whose genre preference is really strong, the original weights probably feel more right. There's no single correct answer here.
+
 ---
 
 ## Limitations and Risks
@@ -289,120 +301,8 @@ I also ran three profiles that were specifically designed to break or confuse th
 
 ## Reflection
 
-Read and complete `model_card.md`:
-
 [**Model Card**](model_card.md)
 
-Write 1 to 2 paragraphs here about what you learned:
+The biggest thing I learned is that a recommender system is really just a set of opinions disguised as math. Every weight I chose — genre at 3.0, mood at 2.0, energy at 1.5 — was a judgment call about what matters most, and those choices completely shaped the output. When I ran the weight experiment and halved genre, the rankings shifted noticeably. The system didn't get "better" or "worse," it just reflected a different set of priorities. That made me realize that when Spotify or YouTube recommends something, there's a whole team of people behind the scenes deciding what factors to prioritize, and those decisions affect what millions of people end up listening to.
 
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
-
-
----
-
-## 7. `model_card_template.md`
-
-Combines reflection and model card framing from the Module 3 guidance. :contentReference[oaicite:2]{index=2}  
-
-```markdown
-# 🎧 Model Card - Music Recommender Simulation
-
-## 1. Model Name
-
-Give your recommender a name, for example:
-
-> VibeFinder 1.0
-
----
-
-## 2. Intended Use
-
-- What is this system trying to do
-- Who is it for
-
-Example:
-
-> This model suggests 3 to 5 songs from a small catalog based on a user's preferred genre, mood, and energy level. It is for classroom exploration only, not for real users.
-
----
-
-## 3. How It Works (Short Explanation)
-
-Describe your scoring logic in plain language.
-
-- What features of each song does it consider
-- What information about the user does it use
-- How does it turn those into a number
-
-Try to avoid code in this section, treat it like an explanation to a non programmer.
-
----
-
-## 4. Data
-
-Describe your dataset.
-
-- How many songs are in `data/songs.csv`
-- Did you add or remove any songs
-- What kinds of genres or moods are represented
-- Whose taste does this data mostly reflect
-
----
-
-## 5. Strengths
-
-Where does your recommender work well
-
-You can think about:
-- Situations where the top results "felt right"
-- Particular user profiles it served well
-- Simplicity or transparency benefits
-
----
-
-## 6. Limitations and Bias
-
-Where does your recommender struggle
-
-Some prompts:
-- Does it ignore some genres or moods
-- Does it treat all users as if they have the same taste shape
-- Is it biased toward high energy or one genre by default
-- How could this be unfair if used in a real product
-
----
-
-## 7. Evaluation
-
-How did you check your system
-
-Examples:
-- You tried multiple user profiles and wrote down whether the results matched your expectations
-- You compared your simulation to what a real app like Spotify or YouTube tends to recommend
-- You wrote tests for your scoring logic
-
-You do not need a numeric metric, but if you used one, explain what it measures.
-
----
-
-## 8. Future Work
-
-If you had more time, how would you improve this recommender
-
-Examples:
-
-- Add support for multiple users and "group vibe" recommendations
-- Balance diversity of songs instead of always picking the closest match
-- Use more features, like tempo ranges or lyric themes
-
----
-
-## 9. Personal Reflection
-
-A few sentences about what you learned:
-
-- What surprised you about how your system behaved
-- How did building this change how you think about real music recommenders
-- Where do you think human judgment still matters, even if the model seems "smart"
-
+The bias part was eye-opening too. My system over-prioritizes genre because I made it worth a third of the total score, and the catalog itself is biased toward the genres I thought to include. Someone who listens to K-pop or Afrobeats wouldn't even find their genre in the data. And the contradictory profile test showed that the system can't handle nuance at all — it doesn't understand that "high energy + sad" is a real vibe that actual music exists for. Real recommender systems deal with this by learning from user behavior over time, but even then they can create filter bubbles where you only ever hear what the algorithm thinks you already like.
