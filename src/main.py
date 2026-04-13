@@ -9,6 +9,11 @@ You will implement the functions in recommender.py:
 - recommend_songs
 """
 
+import os, sys
+
+# Allow running as `python -m src.main` from the project root
+sys.path.insert(0, os.path.dirname(__file__))
+
 from recommender import load_songs, recommend_songs
 
 
@@ -33,7 +38,8 @@ def print_recommendations(profile_name: str, user_prefs: dict, songs: list, k: i
 
 
 def main() -> None:
-    songs = load_songs("data/songs.csv")
+    csv_path = os.path.join(os.path.dirname(__file__), "..", "data", "songs.csv")
+    songs = load_songs(csv_path)
 
     profiles = {
         "Profile A: Rock Fan": {
